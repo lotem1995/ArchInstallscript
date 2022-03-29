@@ -1,18 +1,16 @@
 #!/bin/bash
+echo "enter hostname:"
+read hostname
 
-hostname=$(dialog --stdout --inputbox "Enter hostname" 0 0) || exit 1
-clear
-: ${hostname:?"hostname cannot be empty"}
+echo "Enter admin username:"
+read user
 
-user=$(dialog --stdout --inputbox "Enter admin username" 0 0) || exit 1
-clear
-: ${user:?"user cannot be empty"}
+echo "Enter admin password"
+read -sp password
 
-password=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
-clear
-: ${password:?"password cannot be empty"}
-password2=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
-clear
+echo "Enter admin password again"
+read -sp password2
+
 [[ "$password" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )
 
 devicelist=$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tac)
@@ -51,4 +49,4 @@ arch-chroot /mnt mkinitcpio -P
 arch-chroot /mnt useradd -m "$user"
 echo "$user:$password" | chpasswd --root /mnt
 echo "root:$password" | chpasswd --root /mnt
-echo "ermanno ALL=(ALL) ALL" >> /mnt/etc/sudoers.d/ermanno
+echo "lotem ALL=(ALL) ALL" >> /mnt/etc/sudoers.d/lotem
