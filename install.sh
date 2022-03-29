@@ -13,13 +13,9 @@ read -sp password2
 
 [[ "$password" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )
 
-devicelist=$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tac)
-device=$(dialog --stdout --menu "Select installation disk" 0 0 0 ${devicelist}) || exit 1
-clear
-
 timedatectl set-ntp true
 
-parted --script "${device}" -- mklabel gpt \
+parted --script "/dev/sda" -- mklabel gpt \
   mkpart ESP fat32 1Mib 512MiB \
   set 1 boot on \
   mkpart primary btrfs 512 100%
